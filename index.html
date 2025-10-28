@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy trình Quản lý Tài sản (ASM) - FAM Mirroring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            /* Đảm bảo nội dung luôn bắt đầu từ trên cùng và có thanh cuộn khi cần */
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start; /* Căn lề trên */
+            width: 100%;
+            height: 100%;
+            overflow-y: auto; /* Thêm thanh cuộn Y khi cần */
+        }
+        .slide.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .progress-bar-fill {
+            transition: width 0.3s ease-in-out;
+        }
+         /* Workflow styles */
+        .role-box {
+            @apply bg-gray-50 border border-gray-200 rounded-lg p-5 w-full flex-1;
+        }
+        .role-title {
+            @apply text-xl font-semibold text-blue-700 mb-4 text-center;
+        }
+        .task-list li {
+            @apply relative pl-6 text-gray-700 mb-2;
+        }
+        .task-list li::before {
+            content: '✔';
+            @apply absolute left-0 top-1 text-green-500 font-semibold;
+        }
+        .arrow-down {
+            @apply text-gray-400 text-3xl font-light my-3 text-center;
+        }
+        .arrow-right {
+             @apply text-gray-400 text-3xl font-light mx-4;
+        }
+        .interaction {
+            @apply border-t border-b border-dashed border-blue-400 my-3 py-3 px-2 bg-blue-50 rounded;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    
+    <div class="w-full max-w-6xl aspect-[16/9] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+        <!-- Main Slide Content Area -->
+        <div id="slide-container" class="flex-grow p-8 sm:p-12 flex flex-col relative overflow-y-auto"> <!-- ĐÃ THÊM: overflow-y-auto -->
+
+            <!-- Slide 1: Tiêu đề -->
+            <div class="slide active">
+                <div class="w-full flex flex-col items-center justify-center text-center">
+                    <div class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-semibold mb-6">ĐỀ XUẤT QUY TRÌNH (PHASE 1)</div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">Quy trình Quản lý Tài sản (ASM)</h1>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl">Phương án "FAM Mirroring"</p>
+                    <p class="mt-2 text-sm text-gray-500">Tách biệt nghiệp vụ Gộp (FAC) của FIN và nghiệp vụ Vận hành (FAM)</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Mô tả cơ bản phương án Phase 1 -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Mô tả cơ bản phương án Phase 1</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <h3 class="font-semibold text-xl text-blue-800">1. Tách biệt Nghiệp vụ</h3>
+                        <p class="text-gray-700 mt-2"><span class="font-semibold">FIN (Kế toán):</span> Tự do gộp tài sản (Compounded) bằng mã `FAC` nội bộ trên NetSuite (Không liên quan ASM).</p>
+                        <p class="text-gray-700 mt-2"><span class="font-semibold">ASM (Vận hành):</span> Chỉ quản lý các mã `FAM` (tương ứng 1 tài sản vật lý) mà FIN đồng bộ (sync) sang ERP.</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <h3 class="font-semibold text-xl text-green-800">2. Hai Luồng Kích hoạt</h3>
+                        <p class="text-gray-700 mt-2">FIN sẽ là người quyết định luồng khi tạo `FAM`:</p>
+                        <p class="font-semibold text-green-700 mt-4">=> Tick `[Có S/N]` (Laptop, TV...): Kích hoạt Luồng 1 (Yêu cầu S/N & Hình ảnh).</p>
+                        <p class="font-semibold text-green-700 mt-2">=> Tick `[Không S/N]` (Bàn, Ghế...): Kích hoạt Luồng 2 (Chỉ Xác nhận).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Workflow Phân quyền & Vai trò -->
+            <div class="slide">
+                 <h2 class="text-3xl font-semibold text-blue-600 mb-6">Workflow Phân quyền & Vai trò Chính (Phase 1)</h2>
+                 
+                 <!-- Bubble 1: FIN (FA) -->
+                 <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-4 shadow">
+                     <h3 class="text-xl font-semibold text-blue-800 mb-3 flex items-center"><i class="fas fa-calculator mr-3 text-2xl"></i>FIN (FA - Kế toán) - Người Khởi tạo</h3>
+                     <ul class="list-disc list-inside text-gray-700 space-y-2">
+                         <li>Tạo `FAM` (tương ứng 1:1) trên NetSuite (NS).</li>
+                         <li>Phân loại <span class="font-semibold">[Có S/N]</span> hoặc <span class="font-semibold">[Không S/N]</span>.</li>
+                         <li>(Nghiệp vụ riêng): Tự quản lý mã gộp `FAC` trên NS.</li>
+                         <li>Phê duyệt (cùng NTP) "Kích hoạt [Có S/N]" và "Tạo FAM Thủ công".</li>
+                         <li>Quyết định & Xác nhận "Thanh lý" (thực hiện Ghi giảm trên NS).</li>
+                     </ul>
+                 </div>
+                 
+                 <div class="flex justify-center text-4xl text-gray-400 my-2">↓</div>
+
+                 <!-- Bubble 2: End User -->
+                 <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-4 shadow">
+                     <h3 class="text-xl font-semibold text-green-800 mb-3 flex items-center"><i class="fas fa-user-check mr-3 text-2xl"></i>End User (QLDA/NV CH/NV BP) - Người Kích hoạt</h3>
+                     <ul class="list-disc list-inside text-gray-700 space-y-2">
+                         <li>Lọc `FAM` (Pending) theo Location/Dept của mình.</li>
+                         <li>Thực hiện Kích hoạt <span class="font-semibold">"Luồng 1 [Có S/N]"</span> (Gửi S/N + Hình ảnh).</li>
+                         <li>Thực hiện Kích hoạt <span class="font-semibold">"Luồng 2 [Không S/N]"</span> (Chỉ xác nhận).</li>
+                         <li>Thực hiện "Điều chuyển", "Yêu cầu Thanh lý".</li>
+                         <li>Gửi Yêu cầu <span class="font-semibold">"Tạo FAM Thủ công"</span> (nếu FIN tick thiếu).</li>
+                     </ul>
+                 </div>
+                 
+                 <div class="flex justify-center text-4xl text-gray-400 my-2">↓</div>
+
+                 <!-- Bubble 3: NTP -->
+                 <div class="bg-gray-50 border-2 border-gray-300 rounded-xl p-6 shadow">
+                     <h3 class="text-xl font-semibold text-gray-800 mb-3 flex items-center"><i class="fas fa-clipboard-list mr-3 text-2xl"></i>NTP (Quản lý tổng ASM) - Người Giám sát</h3>
+                     <ul class="list-disc list-inside text-gray-700 space-y-2">
+                         <li>Giám sát Dashboard tổng (Toàn hệ thống).</li>
+                         <li>Theo dõi toàn bộ vòng đời `FAM`.</li>
+                         <li>Phê duyệt (cùng FIN) "Kích hoạt [Có S/N]" và "Tạo FAM Thủ công".</li>
+                         <li><span class="font-semibold text-red-600">Sử dụng Chức năng "Edit S/N"</span> (sửa lỗi gán sai).</li>
+                     </ul>
+                 </div>
+            </div>
+
+            <!-- Slide 4: Bước 1: FIN Tạo FAM (Ví dụ) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 1: FIN Tạo `FAM` (Trên NetSuite)</h2>
+                <p class="text-gray-600 mb-6">Kế toán (FA) tạo 3 mã `FAM` (tương ứng 3 tài sản) và phân loại thủ công:</p>
+                <!-- UI Mockup: FIN View -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện/File Upload Kế toán (FIN)</h4>
+                    <div class="bg-white p-4 rounded-lg shadow-inner mt-2">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="p-2">Mã `FAM` (Tạo mới)</th>
+                                    <th class="p-2">Tên SKU</th>
+                                    <th class="p-2">Location</th>
+                                    <th class="p-2">Tick [Có S/N]</th>
+                                    <th class="p-2">Tick [Không S/N]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b bg-green-50">
+                                    <td class="p-2 font-mono">FAM-LAPTOP-001</td>
+                                    <td class="p-2">Laptop Dell Vostro</td>
+                                    <td class="p-2">PMHOF</td>
+                                    <td class="p-2 text-center"><i class="fas fa-check-circle text-green-600"></i></td>
+                                    <td class="p-2 text-center"></td>
+                                </tr>
+                                <tr class="border-b bg-green-50">
+                                    <td class="p-2 font-mono">FAM-MANHINH-001</td>
+                                    <td class="p-2">Màn hình Dell 24"</td>
+                                    <td class="p-2">PMHOF</td>
+                                    <td class="p-2 text-center"><i class="fas fa-check-circle text-green-600"></i></td>
+                                    <td class="p-2 text-center"></td>
+                                </tr>
+                                <tr class="border-b bg-blue-50">
+                                    <td class="p-2 font-mono">FAM-THANGNHOM-001</td>
+                                    <td class="p-2">Thang nhôm 5m</td>
+                                    <td class="p-2">PMHOF</td>
+                                    <td class="p-2 text-center"></td>
+                                    <td class="p-2 text-center"><i class="fas fa-check-circle text-blue-600"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Bước 2: ERP-ASM Đồng bộ (Sync) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 2: ERP-ASM Đồng bộ (Sync)</h2>
+                <p class="text-gray-600 mb-6">Hệ thống ERP-ASM tiếp nhận 3 `FAM` và gán trạng thái `Pending` (Chờ Kích hoạt).</p>
+                <!-- UI Mockup: End User View -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện End User (Ví dụ: NV Phòng Tài Chính, Loc: PMHOF)</h4>
+                     <div class="bg-white p-3 rounded-lg shadow-inner space-y-2">
+                        <!-- Item 1 Pending -->
+                        <div class="flex items-center justify-between p-3 bg-white rounded shadow border-l-4 border-yellow-500">
+                            <div>
+                                <p class="font-semibold">Mã Logic: FAM-LAPTOP-001</p>
+                                <p class="text-xs text-gray-500">Loại: <span class="font-semibold text-red-600">[Có S/N]</span> - Trạng thái: Pending</p>
+                            </div>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">Kích hoạt (Gửi S/N)</button>
+                        </div>
+                        <!-- Item 2 Pending -->
+                        <div class="flex items-center justify-between p-3 bg-white rounded shadow border-l-4 border-yellow-500">
+                             <div>
+                                <p class="font-semibold">Mã Logic: FAM-MANHINH-001</p>
+                                <p class="text-xs text-gray-500">Loại: <span class="font-semibold text-red-600">[Có S/N]</span> - Trạng thái: Pending</p>
+                            </div>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">Kích hoạt (Gửi S/N)</button>
+                        </div>
+                         <!-- Item 3 Pending -->
+                        <div class="flex items-center justify-between p-3 bg-white rounded shadow border-l-4 border-yellow-500">
+                             <div>
+                                <p class="font-semibold">Mã Logic: FAM-THANGNHOM-001</p>
+                                <p class="text-xs text-gray-500">Loại: <span class="font-semibold text-blue-600">[Không S/N]</span> - Trạng thái: Pending</p>
+                            </div>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">Kích hoạt (Xác nhận)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Bước 3: End User Kích hoạt (Luồng Có S/N) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 3: End User Kích hoạt (Luồng Có S/N)</h2>
+                <p class="text-gray-600 mb-6">End User nhấn "Kích hoạt" cho `FAM-LAPTOP-001`.</p>
+                <!-- UI Mockup: Pop-up -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-inner mt-4 max-w-lg mx-auto">
+                        <h5 class="font-semibold text-lg mb-4">Kích hoạt [Có S/N]: FAM-LAPTOP-001</h5>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="font-semibold text-gray-600">1. Nhập/Quét Serial Number (S/N) <span class="text-red-500">*</span></label>
+                                <input type="text" placeholder="Quét S/N trên thiết bị..." class="w-full p-2 border border-gray-300 rounded mt-1 font-mono">
+                            </div>
+                             <div>
+                                <label class="font-semibold text-gray-600">2. Đính kèm Hình ảnh (S/N & Thiết bị) <span class="text-red-500">*</span></label>
+                                <input type="file" class="w-full p-2 border border-gray-300 rounded mt-1">
+                            </div>
+                            <button class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg w-full">Gửi Phê duyệt (cho NTP/FIN)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Bước 4: NTP/FIN Phê duyệt (Luồng Có S/N) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 4: NTP/FIN Phê duyệt (Luồng Có S/N)</h2>
+                <p class="text-gray-600 mb-6">Yêu cầu được gửi đến hàng chờ Phê duyệt của NTP và FIN.</p>
+                <!-- UI Mockup: Approval Queue -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện Phê duyệt (NTP/FIN)</h4>
+                    <div class="bg-white p-4 rounded-lg shadow border border-yellow-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold">FAM-LAPTOP-001 (Chờ Phê duyệt)</p>
+                                <p class="text-sm text-gray-600">S/N: <span class="font-mono">SN-XYZ-123</span> | Gửi từ: <span class="font-semibold">Nhân viên A</span></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-semibold">Xem Hình ảnh</button>
+                                <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">Approve (Success)</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="font-semibold text-yellow-800">Ghi chú - Phương án Tối ưu (Auto-Success):</p>
+                        <p class="text-sm text-gray-700">Có thể xem xét function "Tự động Success" (Auto-Success) nếu các điều kiện (VD: S/N hợp lệ, hình ảnh rõ nét) đã thỏa, để giảm thời gian chờ Phê duyệt.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Chức năng Thủ công: "Edit S/N" -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Chức năng Thủ công: "Edit S/N" (Sửa lỗi)</h2>
+                <p class="text-gray-600 mb-6">Chức năng này là bắt buộc nếu đi theo phương án "Auto-Success" (Slide 7) hoặc khi End User gán nhầm S/N.</p>
+                <!-- UI Mockup: Edit Button -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện Quản lý Tổng (NTP)</h4>
+                    <div class="bg-white p-4 rounded-lg shadow border border-red-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold">FAM-LAPTOP-001 (Trạng thái: Active/Success)</p>
+                                <p class="text-sm text-gray-600">S/N hiện tại: <span class="font-mono line-through">SN-NHAM-456</span> | Phát hiện: <span class="font-semibold text-red-600">Gán sai</span></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">Chỉnh sửa S/N (Edit)</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-4">Chỉ có NTP (Quản lý tổng) mới có quyền "Edit" để sửa S/N đã gán sai. Mọi chỉnh sửa đều phải được lưu vết (audit log).</p>
+                </div>
+            </div>
+
+            <!-- Slide 9: Bước 3 (Tiếp): End User Kích hoạt (Luồng Không S/N) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 3 (Tiếp): End User Kích hoạt (Luồng Không S/N)</h2>
+                <p class="text-gray-600 mb-6">End User nhấn "Kích hoạt" cho `FAM-THANGNHOM-001`.</p>
+                <!-- UI Mockup: Pop-up -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-inner mt-4 max-w-lg mx-auto">
+                        <h5 class="font-semibold text-lg mb-4">Kích hoạt [Không S/N]: FAM-THANGNHOM-001</h5>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-semibold text-gray-500">Tên tài sản:</label>
+                                <p class="font-semibold text-lg text-gray-800">Thang nhôm 5m</p>
+                            </div>
+                             <div>
+                                <label class="text-sm font-semibold text-gray-500">Số lượng:</label>
+                                <p class="font-semibold text-lg text-gray-800">1</p>
+                            </div>
+                             <div>
+                                <label class="text-sm font-semibold text-gray-500">Location:</label>
+                                <p class="font-semibold text-lg text-gray-800">PMHOF</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-5 w-5 text-blue-600 rounded">
+                                    <span class="ml-3 text-gray-700">Tôi xác nhận đã nhận tài sản vật lý đúng với thông tin trên.</span>
+                                </label>
+                            </div>
+                            <button class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg w-full">"Yes" - Xác nhận (Success)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Bước 5: Quy trình Dán tem (Tagging Task) (ĐÃ SỬA) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 5: Quy trình Dán tem (Tagging Task)</h2>
+                <p class="text-gray-600 mb-6">Sau khi `FAM` ở trạng thái `Success` (Active), tem vật lý (in mã `FAM`) được dán lên tài sản.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Luồng VP -->
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h3 class="font-semibold text-xl text-gray-800">A. Luồng Văn Phòng (Office)</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+                            <li><span class="font-semibold">Pre-Opening (QLDA):</span>
+                                <ul class="list-circle list-inside ml-8 text-sm">
+                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li> <!-- ĐÃ SỬA -->
+                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li> <!-- ĐÃ SỬA -->
+                                </ul>
+                            </li>
+                            <li><span class="font-semibold">Operating (NV Phòng ban):</span>
+                                <ul class="list-circle list-inside ml-8 text-sm">
+                                    <li>NV Phòng ban / AC "in charge".</li>
+                                    <li>`FAM` được Kích hoạt (Success).</li>
+                                    <li>AC đi dán tem `FAM` và kết hợp kiểm kê.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Luồng CH -->
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h3 class="font-semibold text-xl text-gray-800">B. Luồng Cửa hàng (Store)</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+                            <li><span class="font-semibold">Pre-Opening (QLDA):</span>
+                                <ul class="list-circle list-inside ml-8 text-sm">
+                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li> <!-- ĐÃ SỬA -->
+                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li> <!-- ĐÃ SỬA -->
+                                </ul>
+                            </li>
+                            <li><span class="font-semibold">Operating (NV Cửa hàng):</span>
+                                <ul class="list-circle list-inside ml-8 text-sm">
+                                    <li>NV Cửa hàng / AC "in charge".</li>
+                                    <li>`FAM` được Kích hoạt (Success).</li>
+                                    <li>Team AC (Kiểm kê) kết hợp lịch kiểm kê định kỳ, mang tem `FAM` (đã in) và dán tại Cửa hàng.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 11: Chức năng Thủ công: "Tạo FAM Thủ công" -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Chức năng Thủ công: "Tạo FAM Thủ công" (ERP)</h2>
+                <p class="text-gray-600 mb-6">Dùng khi FIN quên/lỗi không tạo `FAM` trên NS, nhưng End User đã nhận tài sản vật lý.</p>
+                <!-- UI Mockup: Manual Create -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện End User (QLDA/NV CH/NV BP)</h4>
+                    <button class="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow mb-4">+ Không tìm thấy `FAM`? Tạo Thủ công</button>
+                    <div class="bg-white p-6 rounded-lg shadow-inner mt-4">
+                        <h5 class="font-semibold text-lg mb-4">Gửi Yêu cầu Tạo `FAM` Thủ công</h5>
+                         <p class="text-sm text-gray-600 mb-4">FIN/NTP sẽ nhận được yêu cầu này để Phê duyệt và tạo `FAM` (nếu hợp lệ).</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="font-semibold text-gray-600">Loại tài sản: <span class="text-red-500">*</span></label>
+                                <div class="flex space-x-4 mt-1">
+                                    <label><input type="radio" name="sn_type" class="mr-1"> [Có S/N]</label>
+                                    <label><input type="radio" name="sn_type" class="mr-1"> [Không S/N]</label>
+                                </div>
+                            </div>
+                             <div>
+                                <label class="font-semibold text-gray-600">SKU (Nếu biết):</label>
+                                <input type="text" placeholder="Tìm SKU..." class="w-full p-2 border border-gray-300 rounded mt-1">
+                            </div>
+                             <div>
+                                <label class="font-semibold text-gray-600">Serial Number (S/N) (Nếu có):</label>
+                                <input type="text" placeholder="Quét S/N trên thiết bị..." class="w-full p-2 border border-gray-300 rounded mt-1">
+                            </div>
+                             <div>
+                                <label class="font-semibold text-gray-600">Hình ảnh Chứng từ/Thiết bị: <span class="text-red-500">*</span></label>
+                                <input type="file" class="w-full p-2 border border-gray-300 rounded mt-1">
+                            </div>
+                            <button class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg w-full">Gửi Yêu cầu (cho NTP/FIN)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 12: Phê duyệt: "Tạo FAM Thủ công" -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Phê duyệt: "Tạo FAM Thủ công"</h2>
+                <p class="text-gray-600 mb-6">Yêu cầu (từ Slide 11) được gửi đến hàng chờ Phê duyệt của NTP và FIN.</p>
+                <!-- UI Mockup: Approval Queue -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 w-full">
+                    <h4 class="font-semibold text-gray-700 mb-4">Giao diện Phê duyệt (NTP/FIN)</h4>
+                    <div class="bg-white p-6 rounded-lg shadow border border-yellow-300">
+                        <h5 class="font-semibold text-lg mb-4">Yêu cầu tạo `FAM` Thủ công (Chờ Phê duyệt)</h5>
+                        <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                            <p><span class="text-gray-500">Người tạo:</span> <span class="font-semibold">QLDA_A</span></p>
+                            <p><span class="text-gray-500">Location:</span> <span class="font-semibold">Loc_Store_A</span></p>
+                            <p><span class="text-gray-500">SKU:</span> <span class="font-semibold">Tủ mát 2 cánh</span></p>
+                            <p><span class="text-gray-500">S/N:</span> <span class="font-mono">SN-TUMAT-777</span></p>
+                        </div>
+                        <div class="mb-4">
+                             <label class="font-semibold text-gray-600">Lý do từ QLDA:</label>
+                             <p class="text-sm p-2 bg-gray-100 rounded border">"Hàng NCC giao thẳng, FIN tick thiếu trên NS."</p>
+                        </div>
+                         <div class="mb-4">
+                             <label class="font-semibold text-gray-600">Hình ảnh đính kèm:</label>
+                             <p class="text-sm text-blue-600 underline cursor-pointer">SN-TUMAT-777.jpg</p>
+                        </div>
+                        <hr class="my-4">
+                        <p class="text-sm text-gray-600 mb-4">FIN/NTP cần liên hệ Kế toán (FA) để tạo mã `FAM` này trên NetSuite trước khi Phê duyệt.</p>
+                        <div class="flex space-x-4">
+                            <button class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg flex-1">Phê duyệt (Đã tạo FAM trên NS)</button>
+                            <button class="bg-red-600 text-white font-semibold py-2 px-6 rounded-lg flex-1">Từ chối (Ghi rõ lý do)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13: Vòng đời: Điều chuyển (Transfer) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Vòng đời: Điều chuyển (Transfer)</h2>
+                <p class="text-gray-600 mb-6">Nghiệp vụ 100% diễn ra trên Module ASM (ERP), Kế toán (FIN) chỉ nhận Báo cáo (FYI) trong Phase 1.</p>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="flex-1 bg-white p-4 rounded-lg border shadow">
+                        <h3 class="font-semibold text-gray-800">1. Gửi (ASM - Store A)</h3>
+                        <p class="text-sm">GSM_A vào ASM, tìm (quét S/N hoặc `FAM`) và nhấn "Điều chuyển" `FAM-LAPTOP-001` đến `Loc_B`.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
+                    <div class="flex-1 bg-yellow-50 p-4 rounded-lg border border-yellow-300 shadow">
+                        <h3 class="font-semibold text-yellow-800">2. HỆ THỐNG (ASM ERP)</h3>
+                        <p class="text-sm">Hệ thống đổi trạng thái `FAM-LAPTOP-001` thành `Đang điều chuyển (In Transit)`.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
+                    <div class="flex-1 bg-white p-4 rounded-lg border shadow">
+                        <h3 class="font-semibold text-gray-800">3. Nhận (ASM - Store B)</h3>
+                        <p class="text-sm">GSM_B thấy "Hàng chờ nhận". Khi Laptop tới, họ tìm (quét S/N) và nhấn "Xác nhận Nhận".</I></p>
+                    </div>
+                </div>
+                 <p class="text-gray-600 mt-6 text-lg text-center">Hệ thống tự động cập nhật `FAM-LAPTOP-001`: `Trạng thái: Active`, `Location: Loc_B`.</p>
+            </div>
+
+            <!-- Slide 14: Vòng đời: Thanh lý (Disposal) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-red-600 mb-6">Vòng đời: Thanh lý (Disposal) - SOP Phase 1</h2>
+                <p class="text-gray-600 mb-6">Vận hành (ASM) đề xuất, Kế toán (FIN) ra quyết định và thực thi trên NetSuite.</p>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg border shadow">
+                        <h3 class="font-semibold text-gray-800">1. ASM (ERP - Vận hành)</h3>
+                        <p class="text-sm">NV/QLDA tìm `FAM-LAPTOP-001` (quét S/N hoặc `FAM`), nhấn "Yêu cầu Thanh lý". Hệ thống đổi trạng thái `FAM` thành <span class="font-semibold text-red-600">`Chờ thanh lý (Pending Disposal)`</span>.</p>
+                    </div>
+                    <div class="flex justify-center text-2xl my-2 text-gray-400">↓</div>
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-300 shadow">
+                        <h3 class="font-semibold text-yellow-800">2. HỆ THỐNG (ERP Báo cáo)</h3>
+                        <p class="text-sm">Hệ thống tạo Báo cáo "Các tài sản `Chờ thanh lý`". FIN thấy yêu cầu cho `FAM-LAPTOP-001`.</p>
+                    </div>
+                    <div class="flex justify-center text-2xl my-2 text-gray-400">↓</div>
+                     <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 shadow">
+                        <h3 class="font-semibold text-blue-800">3. FIN (Ra Quyết định & Thực thi trên NetSuite)</h3>
+                        <p class="text-sm">FIN đăng nhập **NetSuite**, tìm `FAM-LAPTOP-001`. Họ đối chiếu và **ra quyết định** (VD: Đã hết khấu hao -> Chỉ thanh lý. / Còn giá trị -> **Thực hiện bút toán Ghi giảm (Write-off) thủ công**).</p>
+                    </div>
+                     <div class="flex justify-center text-2xl my-2 text-gray-400">↓</div>
+                     <div class="bg-red-50 p-4 rounded-lg border border-red-200 shadow">
+                        <h3 class="font-semibold text-red-800">4. FIN (ERP - Cập nhật)</h3>
+                        <p class="text-sm">Sau khi xong việc trên NetSuite, FIN quay lại **ERP**, tìm `FAM-LAPTOP-001` và nhấn "Xác nhận Đã Ghi giảm". Hệ thống đổi trạng thái `FAM` sang `Disposed`.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 15: Kết luận -->
+            <div class="slide">
+                <div class="w-full flex flex-col items-center justify-center text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">Kết luận & Thảo luận</h1>
+                    <ul class="list-none text-left text-lg text-gray-700 space-y-3 max-w-2xl mt-8">
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1"><i class="fas fa-check-circle"></i></span><div><span class="font-semibold">Đơn giản hóa:</span> Loại bỏ `ASC` (Child) phức tạp. Chỉ có 1 mã duy nhất là `FAM` để Vận hành và Kế toán cùng theo dõi.</div></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1"><i class="fas fa-check-circle"></i></span><div><span class="font-semibold">Linh hoạt:</span> FIN toàn quyền quyết định `FAM` nào `[Có S/N]` và `FAM` nào `[Không S/N]`.</div></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1"><i class="fas fa-check-circle"></i></span><div><span class="font-semibold">Giải quyết "Compounded Asset":</span> Kế toán (FIN) tự do gộp `FAC` trên NS, không ảnh hưởng đến Vận hành (ASM) vì họ chỉ nhận `FAM`.</div></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1"><i class="fas fa-check-circle"></i></span><div><span class="font-semibold">Kiểm soát:</span> Luồng `[Có S/N]` yêu cầu Phê duyệt (S/N + Hình ảnh), đảm bảo dữ liệu chính xác trước khi Kích hoạt.</div></li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Footer with Navigation and Progress Bar -->
+        <div class="bg-gray-50 p-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <button id="prevBtn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    Trước
+                </button>
+                <div class="flex-grow mx-4">
+                     <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="text-sm font-medium text-gray-600 w-20 text-center">
+                    Trang <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">15</span>
+                </div>
+                <button id="nextBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                     Tiếp
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentSlideNum = document.getElementById('currentSlideNum');
+        const totalSlidesNum = document.getElementById('totalSlidesNum');
+        const progressBar = document.getElementById('progressBar');
+
+        let currentSlide = 0;
+        const totalSlides = 15; // Đã cập nhật tổng số slide
+
+        totalSlidesNum.textContent = totalSlides;
+
+        function showSlide(index) {
+            // Ẩn tất cả các slide
+            slides.forEach((slide) => {
+                slide.classList.remove('active');
+            });
+            
+            // Hiển thị slide hiện tại
+            if (slides[index]) {
+                slides[index].classList.add('active');
+            }
+            
+            currentSlideNum.textContent = index + 1;
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === totalSlides - 1;
+
+            const progressPercentage = ((index + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+        
+        // Initial setup
+        const initialSlideIndex = 0; // Bắt đầu từ slide 1 (index 0)
+        showSlide(initialSlideIndex);
+    });
+</script>
+
+</body>
+</html>
+
