@@ -325,7 +325,7 @@
                 </div>
             </div>
 
-            <!-- Slide 10: Bước 5: Quy trình Dán tem (Tagging Task) (ĐÃ SỬA) -->
+            <!-- Slide 10: Bước 5: Quy trình Dán tem (Tagging Task) -->
             <div class="slide">
                 <h2 class="text-3xl font-semibold text-blue-600 mb-6">Bước 5: Quy trình Dán tem (Tagging Task)</h2>
                 <p class="text-gray-600 mb-6">Sau khi `FAM` ở trạng thái `Success` (Active), tem vật lý (in mã `FAM`) được dán lên tài sản.</p>
@@ -336,8 +336,8 @@
                         <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
                             <li><span class="font-semibold">Pre-Opening (QLDA):</span>
                                 <ul class="list-circle list-inside ml-8 text-sm">
-                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li> <!-- ĐÃ SỬA -->
-                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li> <!-- ĐÃ SỬA -->
+                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li>
+                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li>
                                 </ul>
                             </li>
                             <li><span class="font-semibold">Operating (NV Phòng ban):</span>
@@ -355,8 +355,8 @@
                         <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
                             <li><span class="font-semibold">Pre-Opening (QLDA):</span>
                                 <ul class="list-circle list-inside ml-8 text-sm">
-                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li> <!-- ĐÃ SỬA -->
-                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li> <!-- ĐÃ SỬA -->
+                                    <li>QLDA "in charge" cho việc update trạng thái active (success) của cả 2 luồng (S/N và ko S/N).</li>
+                                    <li>Tag vật lý được AC dán sau (kết hợp với việc kiểm kê lần đầu sau khai trương).</li>
                                 </ul>
                             </li>
                             <li><span class="font-semibold">Operating (NV Cửa hàng):</span>
@@ -441,14 +441,14 @@
                 </div>
             </div>
 
-            <!-- Slide 13: Vòng đời: Điều chuyển (Transfer) -->
+            <!-- Slide 13: Vòng đời: Điều chuyển (Luồng Cửa hàng) (ĐÃ SỬA) -->
             <div class="slide">
-                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Vòng đời: Điều chuyển (Transfer)</h2>
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Vòng đời: Điều chuyển (Luồng Cửa hàng)</h2>
                 <p class="text-gray-600 mb-6">Nghiệp vụ 100% diễn ra trên Module ASM (ERP), Kế toán (FIN) chỉ nhận Báo cáo (FYI) trong Phase 1.</p>
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 text-center">
                     <div class="flex-1 bg-white p-4 rounded-lg border shadow">
-                        <h3 class="font-semibold text-gray-800">1. Gửi (ASM - Store A)</h3>
-                        <p class="text-sm">GSM_A vào ASM, tìm (quét S/N hoặc `FAM`) và nhấn "Điều chuyển" `FAM-LAPTOP-001` đến `Loc_B`.</p>
+                        <h3 class="font-semibold text-gray-800">1. Gửi (ASM - Cửa hàng A)</h3>
+                        <p class="text-sm">Nhân viên cửa hàng A vào ASM, tìm (quét S/N hoặc `FAM`) và nhấn "Điều chuyển" `FAM-LAPTOP-001` đến `Loc_B`.</p> <!-- ĐÃ SỬA -->
                     </div>
                     <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
                     <div class="flex-1 bg-yellow-50 p-4 rounded-lg border border-yellow-300 shadow">
@@ -457,14 +457,37 @@
                     </div>
                     <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
                     <div class="flex-1 bg-white p-4 rounded-lg border shadow">
-                        <h3 class="font-semibold text-gray-800">3. Nhận (ASM - Store B)</h3>
-                        <p class="text-sm">GSM_B thấy "Hàng chờ nhận". Khi Laptop tới, họ tìm (quét S/N) và nhấn "Xác nhận Nhận".</I></p>
+                        <h3 class="font-semibold text-gray-800">3. Nhận (ASM - Cửa hàng B)</h3>
+                        <p class="text-sm">Nhân viên cửa hàng B thấy "Hàng chờ nhận". Khi Laptop tới, họ tìm (quét S/N) và nhấn "Xác nhận Nhận".</I></p> <!-- ĐÃ SỬA -->
                     </div>
                 </div>
                  <p class="text-gray-600 mt-6 text-lg text-center">Hệ thống tự động cập nhật `FAM-LAPTOP-001`: `Trạng thái: Active`, `Location: Loc_B`.</p>
             </div>
 
-            <!-- Slide 14: Vòng đời: Thanh lý (Disposal) -->
+            <!-- Slide 14: Vòng đời: Điều chuyển (Luồng Văn Phòng) (MỚI) -->
+            <div class="slide">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Vòng đời: Điều chuyển (Luồng Văn Phòng)</h2>
+                <p class="text-gray-600 mb-6">NTP là đơn vị trung gian thu hồi và tái cấp thiết bị (do tài sản VP thường có giá trị cao, cần NTP quản lý).</p>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="flex-1 bg-white p-4 rounded-lg border shadow">
+                        <h3 class="font-semibold text-gray-800">1. Gửi (NV Phòng ban A)</h3>
+                        <p class="text-sm">NV Phòng ban A nhấn "Yêu cầu Điều chuyển" `FAM-LAPTOP-001`. Trạng thái đổi thành `Chờ Thu hồi (Pending Collection)`.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
+                    <div class="flex-1 bg-yellow-50 p-4 rounded-lg border border-yellow-300 shadow">
+                        <h3 class="font-semibold text-yellow-800">2. NTP (Thu hồi & Tái cấp)</h3>
+                        <p class="text-sm">NTP nhận Y/c, đến thu hồi thiết bị. NTP quét `FAM` và nhấn "Đã thu hồi". Trạng thái `FAM` -> `In Transit (Internal)`. NTP giao máy cho NV B.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-gray-400 font-light mx-4">→</div>
+                    <div class="flex-1 bg-white p-4 rounded-lg border shadow">
+                        <h3 class="font-semibold text-gray-800">3. Nhận (NV Phòng ban B)</h3>
+                        <p class="text-sm">NV Phòng ban B thấy "Hàng chờ nhận". Khi NTP giao, họ quét `FAM`/S/N và nhấn "Xác nhận Nhận".</p>
+                    </div>
+                </div>
+                 <p class="text-gray-600 mt-6 text-lg text-center">Hệ thống cập nhật `FAM-LAPTOP-001`: `Trạng thái: Active`, `Location: Loc_B`, `User: NV_B`.</p>
+            </div>
+
+            <!-- Slide 15: Vòng đời: Thanh lý (Disposal) (ĐÃ ĐỔI SỐ) -->
             <div class="slide">
                 <h2 class="text-3xl font-semibold text-red-600 mb-6">Vòng đời: Thanh lý (Disposal) - SOP Phase 1</h2>
                 <p class="text-gray-600 mb-6">Vận hành (ASM) đề xuất, Kế toán (FIN) ra quyết định và thực thi trên NetSuite.</p>
@@ -491,7 +514,7 @@
                 </div>
             </div>
 
-            <!-- Slide 15: Kết luận -->
+            <!-- Slide 16: Kết luận (ĐÃ ĐỔI SỐ) -->
             <div class="slide">
                 <div class="w-full flex flex-col items-center justify-center text-center">
                     <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">Kết luận & Thảo luận</h1>
@@ -519,7 +542,7 @@
                     </div>
                 </div>
                 <div class="text-sm font-medium text-gray-600 w-20 text-center">
-                    Trang <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">15</span>
+                    Trang <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">16</span>
                 </div>
                 <button id="nextBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
                      Tiếp
@@ -538,7 +561,7 @@
         const progressBar = document.getElementById('progressBar');
 
         let currentSlide = 0;
-        const totalSlides = 15; // Đã cập nhật tổng số slide
+        const totalSlides = 16; // Đã cập nhật tổng số slide
 
         totalSlidesNum.textContent = totalSlides;
 
